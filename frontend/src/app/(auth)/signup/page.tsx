@@ -66,13 +66,13 @@ export default function SignUp() {
 
   let formData: MutableRefObject<FormData> = useRef(new FormData());
 
-  const fileToBase64: (file: File) => Promise<string> = (file: File) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-    });
-  };
+  // const fileToBase64: (file: File) => Promise<string> = (file: File) => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => resolve(reader.result as string);
+  //   });
+  // };
 
   const formFinalization = async (selectedTags: string[]) => {
     // Save the selected tags in a ref

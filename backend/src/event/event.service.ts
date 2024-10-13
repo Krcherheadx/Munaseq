@@ -11,6 +11,12 @@ export class EventService {
     return this.prisma.event.create({
       data: {
         ...createEventDto,
+        endDateTime: createEventDto.endDateTime,
+        startDateTime: createEventDto.startDateTime,
+        title: createEventDto.title,
+        categories: createEventDto.categories,
+        description: createEventDto.description,
+        gender: createEventDto.gender,
         eventCreatorId,
       },
     });
@@ -57,16 +63,9 @@ export class EventService {
   }
 
   findAllCurrentUserEvents(eventCreatorId: string) {
-    const currentDate = new Date();
     return this.prisma.event.findMany({
       where: {
         eventCreatorId,
-        startDateTime: {
-          lte: currentDate, // Event has started
-        },
-        endDateTime: {
-          gte: currentDate, // Event has not ended
-        },
       },
     });
   }

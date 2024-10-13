@@ -3,48 +3,42 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function signupAction(formData: FormData) {
-  const signupData = {
-    username: formData.get("username") as string,
-    email: formData.get("email") as string,
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    password: formData.get("password") as string,
-  };
-  console.log(formData);
+
+
+  const mappedFormData = new FormData();
+
+  // Mapping frontend fields to backend fields
+  mappedFormData.append("username", formData.get("username") as string);
+  mappedFormData.append("email", formData.get("email") as string);
+  mappedFormData.append("firstName", formData.get("firstName") as string);
+  mappedFormData.append("lastName", formData.get("lastName") as string);
+  mappedFormData.append("password", formData.get("password") as string);
+  mappedFormData.append("visibleName", formData.get("displayName") as string);
+  mappedFormData.append("profilePicture", formData.get("profileImage") as File);
+  mappedFormData.append("gender", formData.get("gender") as string);
+
+  //if only one tag is selected it will treat it as a single value. Thus, an error will occur
+  const tags = formData.getAll("tags") as string[];
+  tags.forEach((tag) => mappedFormData.append("categories", tag)); 
+  
+
+
+
   try {
     const createResponse = await fetch(`http://localhost:3002/auth/signup`, {
       method: "POST",
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-      body: formData,
+      body: mappedFormData,
     });
+
     if (!createResponse.ok) {
-      throw new Error(`HTTP error! status: ${createResponse.status}`);
+      const errorResponse = await createResponse.text(); // Capture the error message
+      console.error("Error response:", errorResponse);
     }
 
     const createResponseData = await createResponse.json();
     const token = createResponseData.access_token;
 
-    // const profileData = {
-    //   visibleName: formData.get("displayName") as string,
-    //   profilePicture: formData.get("profileImage") as string,
-    //   gender: formData.get("gender") as string,
-    //   categories: formData.getAll("tags") as string[],
-    // };
-
-    // const editResponse = await fetch(`http://localhost:3000/user`, {
-    //   method: "PATCH",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    //   body: JSON.stringify(profileData),
-    // });
-
-    // if (!editResponse.ok) {
-    //   throw new Error(`HTTP error! status: ${editResponse.status}`);
-    // }
+ 
 
     const cookieStore = cookies();
     cookieStore.set("token", token, { maxAge: 259200, path: "/" });

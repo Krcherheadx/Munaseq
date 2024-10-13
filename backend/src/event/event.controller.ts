@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { AuthGuard } from '../auth/auth.guard';
@@ -22,7 +23,8 @@ export class EventController {
   @UseGuards(AuthGuard)
   @Post()
   create(
-    @Body() createEventDto: CreateEventDto,
+    @Body()
+    createEventDto: CreateEventDto,
     @GetCurrentUserId() eventCreatorId: string,
   ) {
     return this.eventService.createEvent(createEventDto, eventCreatorId);

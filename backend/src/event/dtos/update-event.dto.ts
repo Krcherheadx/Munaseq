@@ -12,34 +12,39 @@ import {
 
 export class UpdateEventDto {
   @IsString()
-  @IsNotEmpty()
-  title: string;
+  @IsOptional()
+  title?: string;
 
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 
+  @IsOptional()
   @IsArray()
-  category: string[];
+  categories?: string[];
 
   @IsString()
   @IsOptional()
-  location: string;
+  location?: string;
 
-  @IsDate()
-  startDate: Date;
+  @IsOptional()
+  @IsString()
+  startDate?: String;
 
-  @IsDate()
-  endDate: Date;
+  @IsOptional()
+  @IsString()
+  endDate?: String;
 
+  @IsOptional()
   @IsInt()
-  seatCapacity: number;
+  seatCapacity?: number;
 
+  @IsOptional()
   @IsEnum(Gender)
   @IsNotEmpty()
-  gender: Gender;
+  gender?: Gender;
 
   @IsOptional()
   @IsInt()
-  price: number;
+  price?: number;
 }

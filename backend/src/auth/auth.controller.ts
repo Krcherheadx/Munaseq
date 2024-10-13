@@ -32,6 +32,7 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
+  @Post('signUp')
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -61,26 +62,19 @@ export class AuthController {
       },
     ),
   )
-  @Post('signUp')
   signUp(
+    @Body() body: userSignUpDto,
     @UploadedFiles()
     files: {
       cv?: Express.Multer.File[];
       profilePicture?: Express.Multer.File[];
     },
-    @Body() body: userSignUpDto,
   ) {
     const cv = files.cv ? files.cv[0] : null;
     const profilePicture = files.profilePicture
       ? files.profilePicture[0]
       : null;
+
     return this.authService.signup(body, profilePicture, cv);
   }
-
-  // probably deleting this route
-  // @UseGuards(AuthGuard)
-  // @Get('profile')
-  // getProfile(@Request() req) {
-  //   return req.user;
-  // }
 }

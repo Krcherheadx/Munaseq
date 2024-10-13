@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 
-import { GetCurrentUserId } from 'src/auth/decorators/get-current-user-id.decorator';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { GetCurrentUserId } from '../auth/decorators/get-current-user-id.decorator';
+import { AuthGuard } from '../auth/auth.guard';
 import { EditUserInfoDto, userChangePasswordDto } from './dtos';
 
 @Controller('user')
@@ -20,7 +20,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Get('me')
-  async getMe(@GetCurrentUserId() id) {
+  async getMe(@GetCurrentUserId() id: string) {
     return this.userService.findById(id);
   }
 

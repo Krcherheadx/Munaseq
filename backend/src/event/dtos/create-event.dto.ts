@@ -17,20 +17,22 @@ export class CreateEventDto {
 
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 
   @IsArray()
-  category: string[];
+  categories: string[];
 
   @IsString()
   @IsOptional()
-  location: string;
+  location?: string;
 
-  @IsDate()
-  startDateTime: Date;
+  @IsOptional()
+  @IsString()
+  startDateTime?: string;
 
-  @IsDate()
-  endDateTime: Date;
+  @IsOptional()
+  @IsString()
+  endDateTime?: string;
 
   @IsInt()
   seatCapacity: number;
@@ -41,5 +43,5 @@ export class CreateEventDto {
 
   @IsOptional()
   @IsInt()
-  price: number;
+  price?: number;
 }
