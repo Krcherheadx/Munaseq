@@ -29,13 +29,12 @@ export class EditUserInfoDto {
   @IsEmail()
   email?: string;
 
-  @IsOptional()
-  @IsString()
-  organizationName?: string;
+  // @IsOptional()
+  // @IsString()
+  // organizationName?: string;
 
   @IsOptional()
-  @IsUrl()
-  profilePicture?: string; // Assume the profile picture is a URL
+  profilePicture?:any; // Assume the profile picture is a URL
 
   @IsOptional()
   @IsString()

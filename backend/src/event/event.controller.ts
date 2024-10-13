@@ -12,8 +12,7 @@ import {
 import { EventService } from './event.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { GetCurrentUserId } from '../auth/decorators/get-current-user-id.decorator';
-import { CreateEventDto } from './dtos/create-event.dto';
-import { UpdateEventDto } from './dtos/update-event.dto';
+import { CreateEventDto, UpdateEventDto } from './dtos';
 
 @Controller('event')
 export class EventController {
@@ -24,7 +23,7 @@ export class EventController {
   @Post()
   create(
     @Body() createEventDto: CreateEventDto,
-    @GetCurrentUserId() eventCreatorId: number,
+    @GetCurrentUserId() eventCreatorId: string,
   ) {
     return this.eventService.createEvent(createEventDto, eventCreatorId);
   }
@@ -38,7 +37,7 @@ export class EventController {
   // what if the event is not public?
   @Get(':id')
   getById(@Param('id') id: string) {
-    return this.eventService.getById(+id);
+    return this.eventService.getById(id);
   }
 
   //   @Get(':id')
@@ -49,22 +48,22 @@ export class EventController {
   @UseGuards(AuthGuard)
   @Patch(':id')
   update(
-    @GetCurrentUserId() eventCreatorId: number,
+    @GetCurrentUserId() eventCreatorId: string,
     @Param('id') id: string,
     @Body() updateEventDto: UpdateEventDto,
   ) {
-    return this.eventService.updateEvent(eventCreatorId, +id, updateEventDto);
+    return this.eventService.updateEvent(eventCreatorId, id, updateEventDto);
   }
 
   @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.eventService.remove(+id);
+    return this.eventService.remove(id);
   }
 
   @UseGuards(AuthGuard)
   @Get('current')
-  findAllCurrentUserEvents(@GetCurrentUserId() eventCreatorId: number) {
+  findAllCurrentUserEvents(@GetCurrentUserId() eventCreatorId: string) {
     return this.eventService.findAllCurrentUserEvents(eventCreatorId);
   }
 }

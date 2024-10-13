@@ -6,7 +6,9 @@ import {
   IsDate,
   IsInt,
   IsArray,
+  IsEnum,
 } from 'class-validator';
+import { Gender } from '@prisma/client';
 
 export class CreateEventDto {
   @IsString()
@@ -32,4 +34,12 @@ export class CreateEventDto {
 
   @IsInt()
   seatCapacity: number;
+
+  @IsEnum(Gender)
+  @IsNotEmpty()
+  gender: Gender;
+
+  @IsOptional()
+  @IsInt()
+  price: number;
 }

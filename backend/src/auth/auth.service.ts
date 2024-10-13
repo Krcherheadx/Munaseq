@@ -51,7 +51,11 @@ export class AuthService {
     };
   }
 
-  async register(signUpDto: userSignUpDto) {
+  async signup(
+    signUpDto: userSignUpDto,
+    profilePicture?: Express.Multer.File,
+    cv?: Express.Multer.File,
+  ) {
     signUpDto.email = signUpDto.email.toLowerCase();
     signUpDto.username = signUpDto.username.toLowerCase();
 
@@ -83,13 +87,40 @@ export class AuthService {
     const hash = await argon2.hash(signUpDto.password);
 
     // Create the new user
-    await this.prisma.user.create({
+    const cvUrl: string = cv
+      ? `http://localhost:3002/pdfs/${cv.filename}`
+      : null;
+    const profilePictureUrl: string = profilePicture
+      ? `http://localhost:3002/images/${profilePicture.filename}`
+      : null;
+    const user = await this.prisma.user.create({
       data: {
         email: signUpDto.email,
         password: hash,
         firstName: signUpDto.firstName,
         lastName: signUpDto.lastName,
         username: signUpDto.username,
+        gender: signUpDto.gender,
+        categories: signUpDto.categories,
+        description: signUpDto.description,
+        profilePictureUrl: profilePictureUrl,
+        cvUrl: cvUrl,
+        visibleName: signUpDto.visibleName,
+        socialAccounts: signUpDto.socialAccounts,
+      },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        gender: true,
+        categories: true,
+        description: true,
+        profilePictureUrl: true,
+        cvUrl: true,
+        visibleName: true,
+        socialAccounts: true,
       },
     });
 
@@ -98,6 +129,6 @@ export class AuthService {
     signInDto.email = signUpDto.email;
     signInDto.password = signUpDto.password;
     signInDto.username = signUpDto.username;
-    return this.signIn(signInDto);
+    return { ...(await this.signIn(signInDto)), ...user };
   }
 }

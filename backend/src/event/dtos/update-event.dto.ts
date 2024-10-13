@@ -1,4 +1,5 @@
 // src/event/dtos/create-event.dto.ts
+import { Gender } from '@prisma/client';
 import {
   IsString,
   IsNotEmpty,
@@ -6,6 +7,7 @@ import {
   IsDate,
   IsInt,
   IsArray,
+  IsEnum,
 } from 'class-validator';
 
 export class UpdateEventDto {
@@ -32,4 +34,12 @@ export class UpdateEventDto {
 
   @IsInt()
   seatCapacity: number;
+
+  @IsEnum(Gender)
+  @IsNotEmpty()
+  gender: Gender;
+
+  @IsOptional()
+  @IsInt()
+  price: number;
 }

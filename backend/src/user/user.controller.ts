@@ -9,10 +9,10 @@ import {
   Post,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { EditUserInfoDto } from './dtos/edit-user-info.dto';
+
 import { GetCurrentUserId } from 'src/auth/decorators/get-current-user-id.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { userChangePasswordDto } from './dtos/user-change-password.dto';
+import { EditUserInfoDto, userChangePasswordDto } from './dtos';
 
 @Controller('user')
 export class UserController {
@@ -28,17 +28,17 @@ export class UserController {
   async findAll() {
     return this.userService.findAllUsers();
   }
-  
+
   @Get(':id')
   async findById(@Param('id') id: string) {
-    return this.userService.findById(+id);
+    return this.userService.findById(id);
   }
-  
+
   @Get('email/:email')
   async findByEmail(@Param('email') email: string) {
     return this.userService.findByEmail(email);
   }
-  
+
   @Get('username/:username')
   async findByUsername(@Param('username') username: string) {
     return this.userService.findByUsername(username);
@@ -46,19 +46,21 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @Patch()
-  async editUserInfo(@GetCurrentUserId() id, @Body() EditUserDto: EditUserInfoDto) {
+  async editUserInfo(
+    @GetCurrentUserId() id,
+    @Body() EditUserDto: EditUserInfoDto,
+  ) {
     return this.userService.editUserInfo(id, EditUserDto);
   }
-  
+
   @UseGuards(AuthGuard)
   @Post('changePassword')
   changePassword(
     @Body() passwordChangeDto: userChangePasswordDto,
     @GetCurrentUserId() userId,
   ) {
-    return this.userService.changeUserPassword(passwordChangeDto, +userId);
+    return this.userService.changeUserPassword(passwordChangeDto, userId);
   }
-
 
   @UseGuards(AuthGuard)
   @Delete()
