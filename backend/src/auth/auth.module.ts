@@ -5,9 +5,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserModule } from '../user/user.module';
 
-import { join } from 'path';
-import { ServeStaticModule } from '@nestjs/serve-static';
-
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
@@ -18,16 +15,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' },
     }),
-    ServeStaticModule.forRoot(
-      {
-        rootPath: join(__dirname, '..', '..', 'pdfs'), // Serve PDF files
-        serveRoot: '/pdfs',
-      },
-      {
-        rootPath: join(__dirname, '..', '..', 'images'), // Serve Image files
-        serveRoot: '/images',
-      },
-    ),
   ],
 })
 export class AuthModule {}

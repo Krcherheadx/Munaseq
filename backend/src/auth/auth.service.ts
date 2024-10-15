@@ -51,11 +51,7 @@ export class AuthService {
     };
   }
 
-  async signup(
-    signUpDto: userSignUpDto,
-    profilePicture?: Express.Multer.File,
-    cv?: Express.Multer.File,
-  ) {
+  async signup(signUpDto: userSignUpDto, profilePictureUrl?: any, cvUrl?: any) {
     signUpDto.email = signUpDto.email.toLowerCase();
     signUpDto.username = signUpDto.username.toLowerCase();
 
@@ -87,12 +83,7 @@ export class AuthService {
     const hash = await argon2.hash(signUpDto.password);
 
     // Create the new user
-    const cvUrl: string = cv
-      ? `http://localhost:3002/pdfs/${cv.filename}`
-      : null;
-    const profilePictureUrl: string = profilePicture
-      ? `http://localhost:3002/images/${profilePicture.filename}`
-      : null;
+
     const user = await this.prisma.user.create({
       data: {
         email: signUpDto.email,

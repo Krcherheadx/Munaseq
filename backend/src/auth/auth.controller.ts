@@ -16,49 +16,66 @@ import { AuthGuard } from './auth.guard';
 import { userSignInDto, userSignUpDto } from './dtos';
 
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+
+import * as multerS3 from 'multer-s3';
+
+import { S3Client } from '@aws-sdk/client-s3';
+import { S3 } from 'aws-sdk';
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+const bucketName = process.env.BUCKET_NAME;
+const region = process.env.BUCKET_REGION;
+const accessKeyId = process.env.ACCESS_KEY;
+const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-  @Post()
-  getHello(@Body() body: any, @Res() res: any) {
-    res.json({ email: body.email, password: body.password });
-  }
 
   @Post('signIn')
   signIn(@Body() signInDto: userSignInDto) {
     return this.authService.signIn(signInDto);
   }
-
   @Post('signUp')
   @UseInterceptors(
     FileFieldsInterceptor(
       [
-        { name: 'cv', maxCount: 1 }, // The field name for the PDF file
-        { name: 'profilePicture', maxCount: 1 }, // The field name for the image file
+        { name: 'cv', maxCount: 1 }, // Field for the PDF
+        { name: 'profilePicture', maxCount: 1 }, // Field for the profile image
       ],
       {
-        storage: diskStorage({
-          destination: (req, file, cb) => {
-            // Check file type to determine where to save the file
-            if (file.mimetype === 'application/pdf') {
-              cb(null, './pdfs'); // Save PDFs in the pdfs folder
-            } else if (file.mimetype.startsWith('image/')) {
-              cb(null, './images'); // Save images in the images folder
-            } else {
-              cb(new Error('Invalid file type'), null); // Handle invalid file types
-            }
-          },
-          filename: (req, file, cb) => {
-            // Custom filename: original name + timestamp to avoid overwrites
-            const name = file.originalname.split('.')[0]; // Get original name
-            const fileExtName = extname(file.originalname); // Get file extension
-            const timestamp = Date.now(); // Add a timestamp for uniqueness
-            cb(null, `${name}-${timestamp}${fileExtName}`);
+        storage: multerS3({
+          s3: new S3Client({
+            region,
+            credentials: {
+              accessKeyId,
+              secretAccessKey,
+            },
+          }),
+          bucket: bucketName,
+          acl: 'public-read',
+          contentType: multerS3.AUTO_CONTENT_TYPE,
+
+          key: (req, file, cb) => {
+            const fileExt = file.originalname.split('.').pop();
+            const fileName = `${file.fieldname}-${Date.now()}.${fileExt}`;
+            cb(null, fileName); // The file name in the S3 bucket
           },
         }),
+        fileFilter: (req, file, cb) => {
+          if (
+            file.mimetype === 'application/pdf' ||
+            file.mimetype.startsWith('image/')
+          ) {
+            cb(null, true);
+          } else {
+            cb(
+              new Error('Invalid file type, only PDF and images are allowed!'),
+              false,
+            );
+          }
+        },
       },
     ),
   )
@@ -66,15 +83,15 @@ export class AuthController {
     @Body() body: userSignUpDto,
     @UploadedFiles()
     files: {
-      cv?: Express.Multer.File[];
-      profilePicture?: Express.Multer.File[];
+      cv?: any;
+      profilePicture?: any;
     },
   ) {
-    const cv = files.cv ? files.cv[0] : null;
-    const profilePicture = files.profilePicture
-      ? files.profilePicture[0]
-      : null;
+    const cvUrl = files.cv ? files.cv[0].location : null; // S3 location of the CV
+    const profilePictureUrl = files.profilePicture
+      ? files.profilePicture[0].location
+      : null; // S3 location of the profile picture
 
-    return this.authService.signup(body, profilePicture, cv);
+    return this.authService.signup(body, profilePictureUrl, cvUrl);
   }
 }
