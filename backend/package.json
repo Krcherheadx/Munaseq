@@ -6,6 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "directories": "mkdir images pdfs",
     "prisma:dev:deploy": "prisma migrate deploy",
     "db:dev:rm": "docker compose rm munaseq_db -s -f -v",
     "db:dev:restart": "npm run db:dev:rm && npm run db:dev:up && sleep 1 && npm run prisma:dev:deploy",
