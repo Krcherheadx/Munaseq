@@ -7,11 +7,13 @@ import { UserModule } from '../user/user.module';
 
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService],
   imports: [
+    ConfigModule.forRoot(),
     UserModule,
     JwtModule.register({
       global: true,
