@@ -69,6 +69,8 @@ export class UserService {
       return await this.prisma.user.findUniqueOrThrow({
         where: {
           email,
+        }, omit: {
+          password: true,
         },
       });
     } catch (error) {
@@ -96,6 +98,8 @@ export class UserService {
       return await this.prisma.user.findUniqueOrThrow({
         where: {
           username,
+        }, omit: {
+          password: true,
         },
       });
     } catch (error) {
@@ -196,6 +200,8 @@ export class UserService {
       where: { id: userId },
       data: {
         password: hash,
+      }, omit: {
+        password: true,
       },
     });
   }

@@ -82,7 +82,7 @@ export class AuthService {
         HttpStatus.CONFLICT,
       );
     }
-    
+
     signUpDto.categories = Array.isArray(signUpDto.categories)
       ? signUpDto.categories
       : [signUpDto.categories];
@@ -110,20 +110,6 @@ export class AuthService {
         cvUrl: cvUrl,
         visibleName: signUpDto.visibleName,
         socialAccounts: signUpDto.socialAccounts,
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        gender: true,
-        categories: true,
-        description: true,
-        profilePictureUrl: true,
-        cvUrl: true,
-        visibleName: true,
-        socialAccounts: true,
       },
     });
 
