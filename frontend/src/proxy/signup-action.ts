@@ -3,8 +3,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function signupAction(formData: FormData) {
-
-
   const mappedFormData = new FormData();
 
   // Mapping frontend fields to backend fields
@@ -17,12 +15,14 @@ export async function signupAction(formData: FormData) {
   mappedFormData.append("profilePicture", formData.get("profileImage") as File);
   mappedFormData.append("gender", formData.get("gender") as string);
 
-  //if only one tag is selected it will treat it as a single value. Thus, an error will occur
-  const tags = formData.getAll("tags") as string[];
-  tags.forEach((tag) => mappedFormData.append("categories", tag)); 
-  
-
-
+  // Handle both single and multiple tag selections
+  const tags = formData.getAll("tags");
+  if (tags.length > 0) {
+    // Ensure tags is always an array, even for a single selection
+    (Array.isArray(tags) ? tags : [tags]).forEach((tag) =>
+      mappedFormData.append("categories", tag as string)
+    );
+  }
 
   try {
     const createResponse = await fetch(`http://localhost:3002/auth/signup`, {
@@ -37,8 +37,6 @@ export async function signupAction(formData: FormData) {
 
     const createResponseData = await createResponse.json();
     const token = createResponseData.access_token;
-
- 
 
     const cookieStore = cookies();
     cookieStore.set("token", token, { maxAge: 259200, path: "/" });

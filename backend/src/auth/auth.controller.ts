@@ -70,8 +70,8 @@ export class AuthController {
       profilePicture?: Express.Multer.File[];
     },
   ) {
-    const cv = files.cv ? files.cv[0] : null;
-    const profilePicture = files.profilePicture
+    const cv = files?.cv ? files.cv[0] : null;
+    const profilePicture = files?.profilePicture
       ? files.profilePicture[0]
       : null;
 

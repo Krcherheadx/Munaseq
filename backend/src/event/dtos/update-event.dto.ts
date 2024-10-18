@@ -1,5 +1,6 @@
 // src/event/dtos/create-event.dto.ts
 import { Gender } from '@prisma/client';
+import { Transform } from 'class-transformer';
 import {
   IsString,
   IsNotEmpty,
@@ -8,6 +9,8 @@ import {
   IsInt,
   IsArray,
   IsEnum,
+  IsNumber,
+  IsBoolean,
 } from 'class-validator';
 
 export class UpdateEventDto {
@@ -28,16 +31,27 @@ export class UpdateEventDto {
   location?: string;
 
   @IsOptional()
-  @IsString()
-  startDate?: String;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  startDateTime?: Date;
 
   @IsOptional()
-  @IsString()
-  endDate?: String;
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  endDateTime?: Date;
 
   @IsOptional()
   @IsInt()
+  @Transform(({ value }) => parseInt(value, 10))
   seatCapacity?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isOnline?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isPublic?: boolean;
 
   @IsOptional()
   @IsEnum(Gender)

@@ -22,12 +22,15 @@ export class UserService {
       where: {
         id: id,
       },
+      omit: {
+        password: true,
+      },
     });
   }
 
   async deleteAll() {
     try {
-      const deletedUsers = await this.prisma.user.deleteMany({});
+      const deletedUsers = await this.prisma.user.deleteMany();
       return { count: deletedUsers.count }; // Return the count of deleted users
     } catch (error) {
       throw new HttpException(
@@ -42,6 +45,9 @@ export class UserService {
       return await this.prisma.user.findUniqueOrThrow({
         where: {
           id,
+        },
+        omit: {
+          password: true,
         },
       });
     } catch (error) {
@@ -112,12 +118,35 @@ export class UserService {
     }
   }
 
-  async editUserInfo(id: string, EditUserDto: EditUserInfoDto) {
+  async editUserInfo(
+    id: string,
+    EditUserDto: EditUserInfoDto,
+    cv?: Express.Multer.File,
+    profilePicture?: Express.Multer.File,
+  ) {
     try {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+      });
+      let cvUrl: string;
+      let profilePictureUrl: string;
+      if (cv) {
+        cvUrl = cv ? `http://localhost:3002/pdfs/${cv.filename}` : user.cvUrl;
+      }
+      if (profilePicture) {
+        profilePictureUrl = profilePicture
+          ? `http://localhost:3002/images/${profilePicture.filename}`
+          : user.profilePictureUrl;
+      }
       return this.prisma.user.update({
-        where: { id: id },
+        where: { id },
         data: {
           ...EditUserDto,
+          cvUrl: cvUrl,
+          profilePictureUrl: profilePictureUrl,
+        },
+        omit: {
+          password: true,
         },
       });
     } catch (error) {
@@ -129,8 +158,12 @@ export class UserService {
   }
 
   // this should not return all the user information including password and such
-  async findAllUsers() {
-    return this.prisma.user.findMany();
+  findAllUsers() {
+    return this.prisma.user.findMany({
+      omit: {
+        password: true,
+      },
+    });
   }
 
   async changeUserPassword(

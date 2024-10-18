@@ -7,17 +7,19 @@ import { CreateEventDto, UpdateEventDto } from './dtos';
 export class EventService {
   constructor(private prisma: PrismaService) {}
 
-  createEvent(createEventDto: CreateEventDto, eventCreatorId: string) {
+  createEvent(
+    createEventDto: CreateEventDto,
+    eventCreatorId: string,
+    image?: Express.Multer.File,
+  ) {
+    const imageUrl: string = image
+      ? `http://localhost:3002/images/${image.filename}`
+      : null;
     return this.prisma.event.create({
       data: {
         ...createEventDto,
-        endDateTime: createEventDto.endDateTime,
-        startDateTime: createEventDto.startDateTime,
-        title: createEventDto.title,
-        categories: createEventDto.categories,
-        description: createEventDto.description,
-        gender: createEventDto.gender,
-        eventCreatorId,
+        imageUrl,
+        eventCreatorId: eventCreatorId,
       },
     });
   }
@@ -49,11 +51,22 @@ export class EventService {
     eventCreatorId: string,
     id: string,
     updateEventDto: UpdateEventDto,
+    image?: Express.Multer.File,
   ) {
-    return this.prisma.event.update({
-      where: { id, eventCreatorId },
-      data: updateEventDto,
-    });
+    const imageUrl: string = image
+      ? `http://localhost:3002/images/${image.filename}`
+      : null;
+    if (image) {
+      return this.prisma.event.update({
+        where: { id, eventCreatorId },
+        data: { ...updateEventDto, imageUrl },
+      });
+    } else {
+      return this.prisma.event.update({
+        where: { id, eventCreatorId },
+        data: updateEventDto,
+      });
+    }
   }
 
   remove(id: string) {
@@ -65,7 +78,7 @@ export class EventService {
   findAllCurrentUserEvents(eventCreatorId: string) {
     return this.prisma.event.findMany({
       where: {
-        eventCreatorId,
+        eventCreatorId: eventCreatorId,
       },
     });
   }

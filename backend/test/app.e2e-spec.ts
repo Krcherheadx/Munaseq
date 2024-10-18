@@ -66,7 +66,8 @@ describe('App e2e ', () => {
             gender: body.gender,
             username: body.username,
           })
-          .expectStatus(HttpStatus.BAD_REQUEST);
+          .expectStatus(HttpStatus.BAD_REQUEST)
+          .inspect();
       });
       it('should thorw an error if the username is empty!', () => {
         return pactum
@@ -79,7 +80,8 @@ describe('App e2e ', () => {
             gender: body.gender,
             email: body.email,
           })
-          .expectStatus(HttpStatus.BAD_REQUEST);
+          .expectStatus(HttpStatus.BAD_REQUEST)
+          .inspect();
       });
       it('should thorw an error if the password is empty!', () => {
         return pactum
@@ -92,7 +94,8 @@ describe('App e2e ', () => {
             gender: body.gender,
             email: body.email,
           })
-          .expectStatus(HttpStatus.BAD_REQUEST);
+          .expectStatus(HttpStatus.BAD_REQUEST)
+          .inspect();
       });
       it('should thorw an error if the firstName is empty!', () => {
         return pactum
@@ -105,7 +108,7 @@ describe('App e2e ', () => {
             gender: body.gender,
             email: body.email,
           })
-          .expectStatus(HttpStatus.BAD_REQUEST);
+          .expectStatus(HttpStatus.BAD_REQUEST).inspect();
       });
       it('should thorw an error if the lastName is empty!', () => {
         return pactum
@@ -118,7 +121,7 @@ describe('App e2e ', () => {
             gender: body.gender,
             email: body.email,
           })
-          .expectStatus(HttpStatus.BAD_REQUEST);
+          .expectStatus(HttpStatus.BAD_REQUEST).inspect();
       });
       it('should signup', () => {
         const spec = pactum
@@ -144,7 +147,7 @@ describe('App e2e ', () => {
         return spec
           .expectStatus(201)
           .stores('userToken', 'access_token')
-          .stores('userId', 'id');
+          .stores('userId', 'id').inspect();
       });
     });
     describe('Signin', () => {
@@ -162,7 +165,7 @@ describe('App e2e ', () => {
             username: null,
             password: body.password,
           })
-          .expectStatus(401);
+          .expectStatus(401).inspect();
       });
       it('should thorw an error if the password is empty!', () => {
         return pactum
@@ -172,7 +175,7 @@ describe('App e2e ', () => {
             email: body.email,
             password: null,
           })
-          .expectStatus(400);
+          .expectStatus(400).inspect();
       });
       it('should thorw an error if the password is incorrect!', () => {
         return pactum
@@ -182,7 +185,7 @@ describe('App e2e ', () => {
             email: body.email,
             password: 'wrongPassword',
           })
-          .expectStatus(401);
+          .expectStatus(401).inspect();
       });
       it('should login with email', () => {
         return pactum
@@ -192,7 +195,7 @@ describe('App e2e ', () => {
             email: body.email,
             password: body.password,
           })
-          .expectStatus(201);
+          .expectStatus(201).inspect();
       });
       it('should login with username', () => {
         return pactum
@@ -202,7 +205,7 @@ describe('App e2e ', () => {
             username: body.username,
             password: body.password,
           })
-          .expectStatus(201);
+          .expectStatus(201).inspect();
       });
     });
   });
@@ -217,9 +220,10 @@ describe('App e2e ', () => {
         gender: 'BOTH',
         seatCapacity: 100,
         location: 'Riyadh',
-        startDateTime: new Date().toISOString(),
-        endDateTime: new Date().toISOString(),
+        startDateTime: new Date(),
+        endDateTime: new Date(),
         price: 0,
+        
       };
 
       it('the event shall be created and related to the creator user', () => {
@@ -239,13 +243,13 @@ describe('App e2e ', () => {
           })
           .withBearerToken(token)
           .expectStatus(201)
-          .stores('eventId', 'id');
+          .stores('eventId', 'id').inspect();
       });
     });
     firstEventId = '$S{eventId}';
     describe('Get list all events', () => {
       it('it list all events', () => {
-        return pactum.spec().get('/event/').expectStatus(200);
+        return pactum.spec().get('/event/').expectStatus(200).inspect();
       });
     });
     describe('Get event by id', () => {
@@ -254,7 +258,7 @@ describe('App e2e ', () => {
           .spec()
           .get('/event/{id}')
           .withPathParams('id', firstEventId)
-          .expectStatus(200);
+          .expectStatus(200).inspect();
       });
     });
     describe('Patch update event', () => {
@@ -269,7 +273,7 @@ describe('App e2e ', () => {
           .withBearerToken(token)
           .withPathParams('id', firstEventId)
           .withBody({ ...body })
-          .expectStatus(200);
+          .expectStatus(200).inspect();
       });
     });
     describe('Get current events', () => {
@@ -278,7 +282,7 @@ describe('App e2e ', () => {
           .spec()
           .get('/event/current')
           .withBearerToken(token)
-          .expectStatus(200);
+          .expectStatus(200).inspect();
       });
     });
     describe('Delete event by id', () => {
@@ -288,7 +292,7 @@ describe('App e2e ', () => {
           .delete('/event/{id}')
           .withPathParams('id', firstEventId)
           .withBearerToken(token)
-          .expectStatus(200);
+          .expectStatus(200).inspect();
       });
     });
   });
@@ -299,13 +303,13 @@ describe('App e2e ', () => {
           .spec()
           .expectStatus(200)
           .get('/user/me')
-          .withBearerToken(token);
+          .withBearerToken(token).inspect();
       });
     });
     describe('Get All Users ', () => {
       // Path /user/
       it("it should print all users' info", () => {
-        return pactum.spec().expectStatus(200).get('/user/');
+        return pactum.spec().expectStatus(200).get('/user/').inspect();
       });
     });
     describe('Get user with id ', () => {
@@ -315,7 +319,7 @@ describe('App e2e ', () => {
           .spec()
           .expectStatus(200)
           .get('/user/{id}')
-          .withPathParams('id', firstUserId);
+          .withPathParams('id', firstUserId).inspect();
       });
     });
     describe('Get user with email ', () => {
@@ -335,7 +339,7 @@ describe('App e2e ', () => {
           .spec()
           .expectStatus(200)
           .get('/user/username/{username}')
-          .withPathParams('username', 'krcherheadx');
+          .withPathParams('username', 'krcherheadx').inspect();
       });
     });
     describe('Patch edit user info', () => {
@@ -352,7 +356,7 @@ describe('App e2e ', () => {
           .withBody({
             ...body,
           })
-          .withBearerToken(token);
+          .withBearerToken(token).inspect();
       });
     });
     describe('Post edit password', () => {
@@ -368,7 +372,7 @@ describe('App e2e ', () => {
           .withBearerToken(token)
           .withBody({
             ...body,
-          });
+          }).inspect();
       });
     });
 
@@ -379,7 +383,7 @@ describe('App e2e ', () => {
           .spec()
           .delete('/user/')
           .expectStatus(200)
-          .withBearerToken(token);
+          .withBearerToken(token).inspect();
       });
     });
   });

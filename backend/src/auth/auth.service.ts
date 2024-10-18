@@ -82,7 +82,10 @@ export class AuthService {
         HttpStatus.CONFLICT,
       );
     }
-
+    
+    signUpDto.categories = Array.isArray(signUpDto.categories)
+      ? signUpDto.categories
+      : [signUpDto.categories];
     // Hash the password
     const hash = await argon2.hash(signUpDto.password);
 

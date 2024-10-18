@@ -33,14 +33,6 @@ export class userSignUpDto {
   @IsString()
   username: string;
 
-  // @IsOptional()
-  // @IsString()
-  // organizationName?: string;
-
-  // @IsBase64()
-  // @IsOptional()
-  // profilePicture?: any; // Assume the profile picture is a URL
-
   @IsOptional()
   @IsString()
   visibleName?: string; // Can be name or organization name
@@ -49,8 +41,7 @@ export class userSignUpDto {
   @IsEnum(Gender)
   gender: Gender;
 
-  @IsOptional()
-  @IsArray()
+  @IsNotEmpty()
   @IsString({ each: true })
   categories?: string[]; // Array of interests
 
