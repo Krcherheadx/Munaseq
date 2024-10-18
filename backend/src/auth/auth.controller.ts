@@ -20,7 +20,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as multerS3 from 'multer-s3';
 
 import { S3Client } from '@aws-sdk/client-s3';
-import { S3 } from 'aws-sdk';
+
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -87,8 +87,8 @@ export class AuthController {
       profilePicture?: any;
     },
   ) {
-    const cvUrl = files.cv ? files.cv[0].location : null; // S3 location of the CV
-    const profilePictureUrl = files.profilePicture
+    const cvUrl = files?.cv ? files.cv[0].location : null; // S3 location of the CV
+    const profilePictureUrl = files?.profilePicture
       ? files.profilePicture[0].location
       : null; // S3 location of the profile picture
 

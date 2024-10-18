@@ -22,12 +22,15 @@ export class UserService {
       where: {
         id: id,
       },
+      omit: {
+        password: true,
+      },
     });
   }
 
   async deleteAll() {
     try {
-      const deletedUsers = await this.prisma.user.deleteMany({});
+      const deletedUsers = await this.prisma.user.deleteMany();
       return { count: deletedUsers.count }; // Return the count of deleted users
     } catch (error) {
       throw new HttpException(
@@ -43,6 +46,7 @@ export class UserService {
         where: {
           id,
         },
+       
       });
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
@@ -64,6 +68,7 @@ export class UserService {
         where: {
           email,
         },
+      
       });
     } catch (error) {
       // Catch specific error when a record is not found
@@ -91,6 +96,7 @@ export class UserService {
         where: {
           username,
         },
+       
       });
     } catch (error) {
       // Catch specific error when a record is not found
@@ -112,12 +118,28 @@ export class UserService {
     }
   }
 
-  async editUserInfo(id: string, EditUserDto: EditUserInfoDto) {
+  async editUserInfo(
+    id: string,
+    EditUserDto: EditUserInfoDto,
+    cvUrl?,
+    profilePictureUrl?,
+  ) {
     try {
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+      });
+      cvUrl = cvUrl ?? user.cvUrl;
+      profilePictureUrl = profilePictureUrl ?? user.profilePictureUrl;
+
       return this.prisma.user.update({
         where: { id: id },
         data: {
           ...EditUserDto,
+          profilePictureUrl,
+          cvUrl,
+        },
+        omit: {
+          password: true,
         },
       });
     } catch (error) {
@@ -130,7 +152,11 @@ export class UserService {
 
   // this should not return all the user information including password and such
   async findAllUsers() {
-    return this.prisma.user.findMany();
+    return this.prisma.user.findMany({
+      omit: {
+        password: true,
+      },
+    });
   }
 
   async changeUserPassword(
@@ -163,6 +189,9 @@ export class UserService {
       where: { id: userId },
       data: {
         password: hash,
+      },
+      omit: {
+        password: true,
       },
     });
   }

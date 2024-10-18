@@ -10,7 +10,8 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 model User {
@@ -47,8 +48,8 @@ model Event {
   isOnline       Boolean  @default(true) // New: Whether the event is remote or on-site
   gender         Gender   @default(BOTH) // New: Gender of attendees (male, female, both)
   // targetAudience String[] // New: Array of target audiences
-  startDateTime  String // Date without time
-  endDateTime    String // Date without time
+  startDateTime  DateTime // Date without time
+  endDateTime    DateTime // Date without time
   imageUrl       String? // New: Optional image string
   price          Int?     @default(0) // New: Price for the event
   createdAt      DateTime @default(now())

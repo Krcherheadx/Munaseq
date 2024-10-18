@@ -21,6 +21,7 @@ describe('App e2e ', () => {
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
+        transform: true,
       }),
     );
     await app.init();
@@ -217,8 +218,8 @@ describe('App e2e ', () => {
         gender: 'BOTH',
         seatCapacity: 100,
         location: 'Riyadh',
-        startDateTime: new Date().toISOString(),
-        endDateTime: new Date().toISOString(),
+        startDateTime: new Date(),
+        endDateTime: new Date(),
         price: 0,
       };
 

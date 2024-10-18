@@ -40,7 +40,6 @@ export class AuthService {
         'You must provide either an email or username',
       );
     }
-
     // Check if the user was found and the password matches
     if (!user || !(await argon2.verify(user.password, signInDto.password))) {
       throw new UnauthorizedException('Invalid credentials');
@@ -78,8 +77,11 @@ export class AuthService {
         HttpStatus.CONFLICT,
       );
     }
-
+    signUpDto.categories = Array.isArray(signUpDto.categories)
+      ? signUpDto.categories
+      : [signUpDto.categories];
     // Hash the password
+
     const hash = await argon2.hash(signUpDto.password);
 
     // Create the new user
@@ -98,20 +100,6 @@ export class AuthService {
         cvUrl: cvUrl,
         visibleName: signUpDto.visibleName,
         socialAccounts: signUpDto.socialAccounts,
-      },
-      select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        username: true,
-        gender: true,
-        categories: true,
-        description: true,
-        profilePictureUrl: true,
-        cvUrl: true,
-        visibleName: true,
-        socialAccounts: true,
       },
     });
 

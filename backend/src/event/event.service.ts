@@ -7,16 +7,15 @@ import { CreateEventDto, UpdateEventDto } from './dtos';
 export class EventService {
   constructor(private prisma: PrismaService) {}
 
-  createEvent(createEventDto: CreateEventDto, eventCreatorId: string) {
+  createEvent(
+    createEventDto: CreateEventDto,
+    eventCreatorId: string,
+    imageUrl: any,
+  ) {
     return this.prisma.event.create({
       data: {
         ...createEventDto,
-        endDateTime: createEventDto.endDateTime,
-        startDateTime: createEventDto.startDateTime,
-        title: createEventDto.title,
-        categories: createEventDto.categories,
-        description: createEventDto.description,
-        gender: createEventDto.gender,
+        imageUrl,
         eventCreatorId,
       },
     });
@@ -49,11 +48,17 @@ export class EventService {
     eventCreatorId: string,
     id: string,
     updateEventDto: UpdateEventDto,
+    imageUrl?: any,
   ) {
-    return this.prisma.event.update({
-      where: { id, eventCreatorId },
-      data: updateEventDto,
-    });
+    return imageUrl
+      ? this.prisma.event.update({
+          where: { id, eventCreatorId },
+          data: { ...updateEventDto, imageUrl },
+        })
+      : this.prisma.event.update({
+          where: { id, eventCreatorId },
+          data: updateEventDto,
+        });
   }
 
   remove(id: string) {
