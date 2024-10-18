@@ -21,6 +21,7 @@ describe('App e2e ', () => {
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
+        transform:true
       }),
     );
     await app.init();
